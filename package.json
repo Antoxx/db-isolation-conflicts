@@ -1,7 +1,7 @@
 {
-  "name": "db-isolation",
+  "name": "db-isolation-conflicts",
   "version": "1.0.0",
-  "description": "",
+  "description": "DB Isolation Level conflicts",
   "type": "module",
   "scripts": {
     "test": "node --experimental-specifier-resolution=node --loader ts-node/esm ",
