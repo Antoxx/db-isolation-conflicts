@@ -24,7 +24,9 @@ export const resetBalance = async (client: Client) => {
 
 export const logBalance = async (client: Client) => {
   const res = await client.query('SELECT balance FROM users WHERE id = 1')
-  console.log(`Balance: ${res.rows[0].balance}`)
+  const balance = res.rows[0].balance
+  console.log(`Balance: ${balance}`)
+  return balance
 }
 
 export const logIsolationLevel = async (client: Client) => {
@@ -37,7 +39,9 @@ export const setIsolationLevel = async (client: Client, level: ISOLATION_LEVEL) 
   await client.query(`ALTER DATABASE test SET default_transaction_isolation TO "${level}"`)
 }
 
-export const increaseBalance = async (client: Client, sum: number, commitDelay = 0, transactionLevel = ISOLATION_LEVEL.READ_COMMITTED) => {
+export const increaseBalance = async (client: Client, sum: number, commitDelay = 0, transactionLevel = ISOLATION_LEVEL.READ_COMMITTED, beforeDelay = 0) => {
+  await new Promise((res) => setTimeout(() => res(true), beforeDelay))
+
   console.log(`INCREASE balance in "${transactionLevel}" level with commit after ${commitDelay} msec: START`)
 
   await client.query(`BEGIN TRANSACTION ISOLATION LEVEL ${transactionLevel}`)

@@ -1,3 +1,4 @@
+import assert from 'assert'
 import { createConnectedClient, increaseBalance, ISOLATION_LEVEL, logBalance, logIsolationLevel, resetBalance } from '../utils.js'
 
 const client = await createConnectedClient()
@@ -5,14 +6,15 @@ const client = await createConnectedClient()
 await logIsolationLevel(client)
 
 await resetBalance(client)
-await logBalance(client)
+let balance = await logBalance(client)
 
 await Promise.all([
   increaseBalance(client, 1.01),
   increaseBalance(client, 10.1),
 ])
 
-await logBalance(client) // 111.11 - OK
+balance = await logBalance(client) // 111.11 - OK
+assert.equal(balance, 111.11)
 
 await resetBalance(client)
 
@@ -21,7 +23,8 @@ await Promise.all([
   increaseBalance(client, 10.1, 0),
 ])
 
-await logBalance(client) // 111.11 - OK
+balance = await logBalance(client) // 111.11 - OK
+assert.equal(balance, 111.11)
 
 await resetBalance(client)
 
@@ -30,7 +33,8 @@ await Promise.all([
   increaseBalance(client, 10.1, 0, ISOLATION_LEVEL.REPEATABLE_READ),
 ])
 
-await logBalance(client) // 111.11 - OK
+balance = await logBalance(client) // 111.11 - OK
+assert.equal(balance, 111.11)
 
 await resetBalance(client)
 
@@ -39,6 +43,7 @@ await Promise.all([
   increaseBalance(client, 10.1, 0, ISOLATION_LEVEL.SERIALIZABLE),
 ])
 
-await logBalance(client) // 111.11 - OK
+balance = await logBalance(client) // 111.11 - OK
+assert.equal(balance, 111.11)
 
 await client.end()
