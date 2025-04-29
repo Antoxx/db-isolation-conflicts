@@ -11,5 +11,5 @@ docker compose -f pg.docker-compose.yml up
 Script:
 
 ```
-npx tsx index.ts
+npm test dirty-write/one-connection-read-committed.ts
 ```

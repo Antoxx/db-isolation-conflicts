@@ -13,5 +13,14 @@ await Promise.all([
 
 await logBalance(client1) // 101.01 - the first is a winner with SERIALIZABLE
 
+await resetBalance(client1)
+
+await Promise.all([
+  increaseBalance(client1, 1.01, 100, ISOLATION_LEVEL.REPEATABLE_READ),
+  increaseBalance(client2, 10.1, 200, ISOLATION_LEVEL.REPEATABLE_READ),
+])
+
+await logBalance(client1) // 101.01 - the first is a winner with SERIALIZABLE, the second failed with error
+
 await client1.end()
 await client2.end()
