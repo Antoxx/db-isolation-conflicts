@@ -62,6 +62,25 @@ export const increaseBalance = async (client: Client, sum: number, commitDelay =
   }
 }
 
+export const readAndIncreaseBalance = async (client: Client, sum: number, transactionLevel = ISOLATION_LEVEL.READ_COMMITTED, useBlocking = false) => {
+  console.log(`READ AND INCREASE balance in "${transactionLevel}" level: START`)
+
+  await client.query(`BEGIN TRANSACTION ISOLATION LEVEL ${transactionLevel}`)
+
+  try {
+    const res = await client.query('SELECT balance FROM users WHERE id = 1' + (useBlocking ? ' FOR UPDATE' : ''))
+    const balance = res.rows[0].balance
+
+    await client.query('UPDATE users SET balance = $1 WHERE id = 1', [balance + sum])
+
+    await client.query('COMMIT')
+    console.log(`READ AND INCREASE balance in "${transactionLevel}" level: COMMITTED`)
+  } catch (e: unknown) {
+    await client.query('ROLLBACK')
+    console.log(`READ AND INCREASE balance in "${transactionLevel}" level: ROLLBACKED (${(e as Error).message})`)
+  }
+}
+
 export const setBalance = async (client: Client, balance: number, commitDelay = 0, transactionLevel = ISOLATION_LEVEL.READ_COMMITTED) => {
   console.log(`SET balance in "${transactionLevel}" level with commit after ${commitDelay} msec: START`)
 
