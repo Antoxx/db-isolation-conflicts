@@ -11,7 +11,10 @@ await Promise.all([
   setBalance(client2, 222, 0, ISOLATION_LEVEL.SERIALIZABLE),
 ])
 
-await logBalance(client1) // 111 - the first is a winner with SERIALIZABLE
+// 111
+// the first is a winner with SERIALIZABLE
+// the second failed with error "could not serialize access due to concurrent update"
+await logBalance(client1)
 
 await client1.end()
 await client2.end()
