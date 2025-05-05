@@ -22,7 +22,7 @@ await Promise.all([
   increaseBalance(client2, 10.1, 500, ISOLATION_LEVEL.REPEATABLE_READ, 1),
 ])
 
-balance = await logBalance(client1) // 110.1 - the second is a winner with SERIALIZABLE (started later), the first failed with error
+balance = await logBalance(client1) // 110.1 - the second is a winner with SERIALIZABLE (started later but finished fast), the first failed with error
 assert.equal(balance, 110.1)
 
 await client1.end()
