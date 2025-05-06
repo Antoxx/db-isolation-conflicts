@@ -39,6 +39,20 @@ export const setIsolationLevel = async (client: Client, level: ISOLATION_LEVEL) 
   await client.query(`ALTER DATABASE test SET default_transaction_isolation TO "${level}"`)
 }
 
+export const executeTransaction = async (client: Client, transactionLevel: ISOLATION_LEVEL, name: string, callback: () => Promise<void>) => {
+  await client.query(`BEGIN TRANSACTION ISOLATION LEVEL ${transactionLevel}`)
+  console.log(`[${name}] in "${transactionLevel}": STARTED`)
+
+  try {
+    await callback()
+    await client.query('COMMIT')
+    console.log(`[${name}] in "${transactionLevel}": COMMITTED`)
+  } catch (e: unknown) {
+    await client.query('ROLLBACK')
+    console.log(`[${name}] in "${transactionLevel}": ROLLBACKED (${(e as Error).message})`)
+  }
+}
+
 export const increaseBalance = async (client: Client, sum: number, commitDelay = 0, transactionLevel = ISOLATION_LEVEL.READ_COMMITTED, beforeDelay = 0) => {
   await new Promise((res) => setTimeout(() => res(true), beforeDelay))
 
@@ -100,4 +114,18 @@ export const setBalance = async (client: Client, balance: number, commitDelay = 
     await client.query('ROLLBACK')
     console.log(`SET balance in "${transactionLevel}" level with commit after ${commitDelay} msec: ROLLBACKED (${(e as Error).message})`)
   }
+}
+
+export const countOrders = async (client: Client) => {
+  const res = await client.query(`SELECT COUNT(*) FROM orders WHERE status = 'NEW'`)
+  return Number(res.rows[0].count)
+}
+
+export const addOrders = async (client: Client, cnt = 1) => {
+  const values = Array(cnt).fill(`(DEFAULT, 'NEW')`).join(',')
+  return client.query(`INSERT INTO orders (id, status) VALUES ${values}`)
+}
+
+export const removeOrders = async (client: Client) => {
+  return client.query(`TRUNCATE TABLE orders`)
 }

@@ -1,5 +1,5 @@
 CREATE TABLE public.users (
-	id int4 NOT NULL,
+	id serial,
 	"password" varchar NULL,
 	"name" varchar NULL,
 	balance float8 DEFAULT 0 NOT NULL,
@@ -9,3 +9,9 @@ CREATE TABLE public.users (
 INSERT INTO public.users
 (id, "password", "name", balance)
 VALUES(1, '123', 'Anton', 100);
+
+CREATE TABLE public.orders (
+	id serial,
+	"status" varchar NOT NULL,
+	CONSTRAINT orders_pk PRIMARY KEY (id)
+);
