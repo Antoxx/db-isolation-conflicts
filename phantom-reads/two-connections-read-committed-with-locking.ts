@@ -53,7 +53,7 @@ await Promise.all([
   
       ordersCnt = await countOrders(client2)
       console.log(`[Transaction 4]: AFTER COUNTING 2 = ${ordersCnt}`)
-      assert.equal(ordersCnt, 1, 'Transaction 2 has 1 order after delay due to TABLE LOCK')
+      assert.equal(ordersCnt, 1, 'Transaction 2 has 1 order after delay due to TABLE LOCK (NO phantoms read)')
     }
   ),
 ])
